@@ -1,0 +1,31 @@
+.primary-action {
+  margin-bottom: var(--space-s);
+}
+
+.end-call-btn {
+  width: 100%;
+  background-color: var(--btn-dark);
+  color: #FFFFFF;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 500;
+  padding: 20px;
+  border-radius: 100px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(47, 62, 56, 0.2);
+}
+
+.end-call-btn:active {
+  transform: scale(0.98);
+}
+
+.end-call-btn svg {
+  width: 20px;
+  height: 20px;
+}

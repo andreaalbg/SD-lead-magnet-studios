@@ -1,0 +1,110 @@
+.agent-card {
+  flex: 1;
+  background-color: var(--card-green);
+  background: linear-gradient(180deg, #A8BA8A 0%, #95A977 100%);
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(24, 43, 35, 0.05);
+  padding: var(--space-l);
+}
+
+/* Glow effect */
+.shape-glow {
+  position: absolute;
+  top: -10%;
+  right: -10%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, var(--accent-cyan) 0%, rgba(124, 240, 214, 0) 70%);
+  border-radius: 50%;
+  opacity: 0.6;
+  filter: blur(40px);
+  animation: breathe 6s ease-in-out infinite alternate;
+}
+
+.shape-circle {
+  position: absolute;
+  top: 15%;
+  right: 5%;
+  width: 120px;
+  height: 120px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+}
+
+@keyframes breathe {
+  0% {
+    transform: scale(1) translate(0, 0);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.2) translate(-10px, 10px);
+    opacity: 0.8;
+  }
+}
+
+/* Status sticker */
+.status-sticker {
+  position: absolute;
+  top: var(--space-m);
+  left: var(--space-m);
+  background-color: var(--accent-yellow);
+  color: var(--text-dark);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-12deg);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  line-height: 1.1;
+  z-index: 2;
+}
+
+/* Call metadata */
+.call-meta {
+  position: relative;
+  z-index: 2;
+  margin-bottom: var(--space-xl);
+}
+
+.label-text {
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-bottom: var(--space-xs);
+}
+
+.agent-name {
+  font-family: var(--font-display);
+  font-size: 42px;
+  line-height: 1.1;
+  margin-bottom: var(--space-s);
+  color: var(--text-dark);
+  font-weight: 400;
+}
+
+.call-time {
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 4px 12px;
+  border-radius: 100px;
+  display: inline-block;
+  backdrop-filter: blur(4px);
+}
