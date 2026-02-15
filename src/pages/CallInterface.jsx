@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useConversation } from '@elevenlabs/react';
 import TextureOverlay from '../components/TextureOverlay';
 import TopBar from '../components/TopBar';
 import AgentCard from '../components/AgentCard';
@@ -71,14 +72,39 @@ function formatTime(totalSeconds) {
   return `${mins}:${secs}`;
 }
 
+const AGENT_ID = 'agent_4201kh8v5788eqt9m80z4ck63wfv';
+
 /* ── Page Component ── */
 
 export default function CallInterface() {
   const [seconds, setSeconds] = useState(0);
   const [muted, setMuted] = useState(false);
   const [speakerOn, setSpeakerOn] = useState(true);
-  const [callActive, setCallActive] = useState(true);
+  const [callActive, setCallActive] = useState(false);
   const timerRef = useRef(null);
+
+  const conversation = useConversation({
+    micMuted: muted,
+    onConnect: () => setCallActive(true),
+    onDisconnect: () => setCallActive(false),
+    onError: (error) => console.error('ElevenLabs error:', error),
+  });
+
+  const { status, isSpeaking } = conversation;
+
+  /* Start session on mount */
+  useEffect(() => {
+    conversation.startSession({ agentId: AGENT_ID }).catch((err) =>
+      console.error('Failed to start session:', err)
+    );
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* Speaker toggle controls agent audio volume */
+  useEffect(() => {
+    if (status === 'connected') {
+      conversation.setVolume({ volume: speakerOn ? 1 : 0 });
+    }
+  }, [speakerOn, status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* Timer */
   useEffect(() => {
@@ -90,16 +116,13 @@ export default function CallInterface() {
     return () => clearInterval(timerRef.current);
   }, [callActive]);
 
-  const handleEndCall = useCallback(() => {
-    setCallActive(false);
-  }, []);
+  const handleEndCall = useCallback(async () => {
+    await conversation.endSession();
+  }, [conversation]);
 
   return (
     <>
       <TextureOverlay />
-
-      {/* ElevenLabs Conversational AI Widget */}
-      <elevenlabs-convai agent-id="agent_4201kh8v5788eqt9m80z4ck63wfv" />
 
       <div className="desktop-layout">
         {/* Phone frame */}
@@ -117,6 +140,8 @@ export default function CallInterface() {
                 </>
               }
               time={formatTime(seconds)}
+              isSpeaking={isSpeaking}
+              status={status}
             />
 
             <div className="controls-area">

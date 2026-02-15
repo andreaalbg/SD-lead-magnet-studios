@@ -1,15 +1,17 @@
 import './AgentCard.css';
 
-export default function AgentCard({ label, name, time }) {
+export default function AgentCard({ label, name, time, isSpeaking, status }) {
+  const connected = status === 'connected';
+
   return (
-    <div className="agent-card">
+    <div className={`agent-card${isSpeaking ? ' speaking' : ''}`}>
       {/* Decorative elements */}
       <div className="shape-glow" />
       <div className="shape-circle" />
 
       {/* Status sticker */}
-      <div className="status-sticker">
-        On<br />Air
+      <div className={`status-sticker${connected ? '' : ' disconnected'}`}>
+        {connected ? <>On<br />Air</> : <>Off<br />Air</>}
       </div>
 
       {/* Call metadata */}

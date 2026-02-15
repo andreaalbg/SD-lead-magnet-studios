@@ -13,7 +13,7 @@ A frontend-only React SPA that presents an AI-powered call interface with an int
 - **Styling:** Plain CSS with co-located files and CSS custom properties (design tokens)
 - **Linting:** ESLint 9 (flat config)
 - **Module system:** ES modules (`"type": "module"`)
-- **External integration:** ElevenLabs ConvAI widget (loaded via script tag in `index.html`)
+- **Voice AI:** ElevenLabs React SDK (`@elevenlabs/react`) — `useConversation` hook
 
 There is no backend, database, authentication, routing library, state management library, or test framework.
 
@@ -29,10 +29,10 @@ npm run preview   # Preview the production build locally
 ## Project Structure
 
 ```
-├── index.html                 # Entry HTML — loads Google Fonts + ElevenLabs widget script
+├── index.html                 # Entry HTML — loads Google Fonts
 ├── vite.config.js             # Vite config (react plugin, default settings)
 ├── eslint.config.js           # ESLint flat config (JS/JSX, react-hooks, react-refresh)
-├── package.json               # Only 2 runtime deps: react, react-dom
+├── package.json               # 3 runtime deps: react, react-dom, @elevenlabs/react
 ├── public/                    # Static assets served at root
 │   └── vite.svg
 └── src/
@@ -59,7 +59,7 @@ npm run preview   # Preview the production build locally
 
 - **Functional components only** with `export default function ComponentName()`.
 - **Local state via React hooks** (`useState`, `useEffect`, `useCallback`, `useRef`, `useMemo`). No global state management.
-- **Props destructured in function signature**: `function AgentCard({ label, name, time })`.
+- **Props destructured in function signature**: `function AgentCard({ label, name, time, isSpeaking, status })`.
 - **SVG icons defined as inline React components** within the file that uses them (see `CallInterface.jsx` for MicIcon, KeypadIcon, SpeakerIcon).
 
 ### File organization
@@ -89,15 +89,27 @@ npm run preview   # Preview the production build locally
 - Custom rule: `no-unused-vars` errors but ignores variables starting with an uppercase letter or underscore (`varsIgnorePattern: '^[A-Z_]'`).
 - Targets `**/*.{js,jsx}` files. Ignores `dist/`.
 
-## Key Integration: ElevenLabs ConvAI
+## Key Integration: ElevenLabs Conversational AI
 
-The ElevenLabs widget is loaded via a script tag in `index.html` and rendered as a custom element in `CallInterface.jsx`:
+The app uses the `@elevenlabs/react` SDK (not the embeddable widget) for full programmatic control over the voice agent. Integration lives entirely in `CallInterface.jsx`:
 
 ```jsx
-<elevenlabs-convai agent-id="agent_4201kh8v5788eqt9m80z4ck63wfv" />
+import { useConversation } from '@elevenlabs/react';
+
+const conversation = useConversation({
+  micMuted: muted,
+  onConnect: () => setCallActive(true),
+  onDisconnect: () => setCallActive(false),
+  onError: (error) => console.error(error),
+});
 ```
 
-The agent ID is currently hardcoded. No environment variable system is configured.
+- **Session lifecycle:** `conversation.startSession({ agentId })` / `conversation.endSession()`
+- **Mic control:** pass `micMuted` state to the hook — toggles real mic input
+- **Volume control:** `conversation.setVolume({ volume: 0–1 })` — controls agent audio output
+- **Real-time state:** `conversation.status` (`"connected"` / `"disconnected"`), `conversation.isSpeaking` (boolean)
+- **Agent ID** is hardcoded as `AGENT_ID` constant at the top of `CallInterface.jsx`. No environment variable system is configured.
+- **Microphone permission:** the browser will prompt for mic access on session start. There is no custom permission UI.
 
 ## State Management
 
@@ -114,5 +126,5 @@ All state is local to components using React hooks:
 - **No Prettier** — only ESLint is configured for code quality.
 - **No routing** — `App.jsx` directly renders `CallInterface`. There is no router.
 - **No environment variables** — all config values (agent ID, event data) are hardcoded.
-- **Minimal dependencies** — only `react` and `react-dom` are runtime dependencies. Avoid adding dependencies unless strictly necessary.
+- **Minimal dependencies** — only `react`, `react-dom`, and `@elevenlabs/react` are runtime dependencies. Avoid adding dependencies unless strictly necessary.
 - **Google Fonts** (DM Sans, DM Serif Display) are loaded via `<link>` tags in `index.html`.
