@@ -86,12 +86,35 @@ export default function CallInterface() {
 
   const conversation = useConversation({
     micMuted: muted,
-    onConnect: () => setCallActive(true),
-    onDisconnect: () => setCallActive(false),
-    onError: (error) => console.error('ElevenLabs error:', error),
+    onConnect: () => {
+      console.log('[ElevenLabs] Connected');
+      setCallActive(true);
+    },
+    onDisconnect: (details) => {
+      console.log('[ElevenLabs] Disconnected:', details);
+      setCallActive(false);
+    },
+    onError: (message, context) => {
+      console.error('[ElevenLabs] Error:', message, context);
+    },
+    onMessage: ({ message, source }) => {
+      console.log(`[ElevenLabs] ${source}:`, message);
+    },
+    onModeChange: ({ mode }) => {
+      console.log('[ElevenLabs] Mode:', mode);
+    },
   });
 
   const { status, isSpeaking } = conversation;
+
+  /* Keep the server-side turn timeout from expiring during silence */
+  useEffect(() => {
+    if (!callActive || status !== 'connected') return;
+    const keepalive = setInterval(() => {
+      conversation.sendUserActivity();
+    }, 10000);
+    return () => clearInterval(keepalive);
+  }, [callActive, status, conversation]);
 
   const handleStartCall = useCallback(() => {
     setShowIntro(false);
