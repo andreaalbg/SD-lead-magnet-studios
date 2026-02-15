@@ -49,6 +49,28 @@
   }
 }
 
+/* Agent is speaking — intensify the glow */
+.agent-card.speaking .shape-glow {
+  animation: speak-pulse 1.5s ease-in-out infinite alternate;
+  opacity: 0.9;
+}
+
+@keyframes speak-pulse {
+  0% {
+    transform: scale(1) translate(0, 0);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.4) translate(-10px, 10px);
+    opacity: 1;
+  }
+}
+
+/* Disconnected sticker style */
+.status-sticker.disconnected {
+  background-color: var(--border-subtle);
+}
+
 /* Status sticker */
 .status-sticker {
   position: absolute;
