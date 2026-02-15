@@ -105,30 +105,39 @@ export default function CallInterface() {
     },
   });
 
+  /* Stable ref so the keepalive effect doesn't re-run on every render */
+  const convRef = useRef(conversation);
+  useEffect(() => {
+    convRef.current = conversation;
+  }, [conversation]);
+
   const { status, isSpeaking } = conversation;
 
-  /* Keep the server-side turn timeout from expiring during silence */
+  /* Keep the server-side turn timeout from expiring during silence.
+     Fire immediately on connect, then every 3 s — the default server
+     turn timeout can be as low as 5 s so 10 s was too slow. */
   useEffect(() => {
     if (!callActive || status !== 'connected') return;
+    convRef.current.sendUserActivity();
     const keepalive = setInterval(() => {
-      conversation.sendUserActivity();
-    }, 10000);
+      convRef.current.sendUserActivity();
+    }, 3000);
     return () => clearInterval(keepalive);
-  }, [callActive, status, conversation]);
+  }, [callActive, status]);
 
   const handleStartCall = useCallback(() => {
     setShowIntro(false);
-    conversation.startSession({ agentId: AGENT_ID }).catch((err) =>
+    convRef.current.startSession({ agentId: AGENT_ID }).catch((err) =>
       console.error('Failed to start session:', err)
     );
-  }, [conversation]);
+  }, []);
 
   /* Speaker toggle controls agent audio volume */
   useEffect(() => {
     if (status === 'connected') {
-      conversation.setVolume({ volume: speakerOn ? 1 : 0 });
+      convRef.current.setVolume({ volume: speakerOn ? 1 : 0 });
     }
-  }, [speakerOn, status]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [speakerOn, status]);
 
   /* Timer */
   useEffect(() => {
@@ -141,8 +150,8 @@ export default function CallInterface() {
   }, [callActive]);
 
   const handleEndCall = useCallback(async () => {
-    await conversation.endSession();
-  }, [conversation]);
+    await convRef.current.endSession();
+  }, []);
 
   return (
     <>
