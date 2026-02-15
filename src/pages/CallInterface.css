@@ -1,4 +1,57 @@
 /* ═══════════════════════════════════════════
+   Intro popup overlay
+   ═══════════════════════════════════════════ */
+
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(24, 43, 35, 0.5);
+  backdrop-filter: blur(8px);
+}
+
+.intro-popup {
+  background: var(--bg-cream);
+  border-radius: 24px;
+  padding: var(--space-xl) var(--space-l);
+  max-width: 380px;
+  margin: var(--space-s);
+  text-align: center;
+  box-shadow:
+    0 25px 60px rgba(24, 43, 35, 0.2),
+    0 8px 24px rgba(24, 43, 35, 0.1);
+}
+
+.intro-text {
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1.35;
+  color: var(--text-dark);
+  margin-bottom: var(--space-l);
+}
+
+.intro-btn {
+  display: inline-block;
+  background-color: var(--btn-dark);
+  color: var(--bg-cream);
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 700;
+  padding: 14px 32px;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.intro-btn:hover {
+  opacity: 0.85;
+}
+
+/* ═══════════════════════════════════════════
    Mobile-first: fullscreen phone layout
    ═══════════════════════════════════════════ */
 

@@ -77,6 +77,7 @@ const AGENT_ID = 'agent_4201kh8v5788eqt9m80z4ck63wfv';
 /* ── Page Component ── */
 
 export default function CallInterface() {
+  const [showIntro, setShowIntro] = useState(true);
   const [seconds, setSeconds] = useState(0);
   const [muted, setMuted] = useState(false);
   const [speakerOn, setSpeakerOn] = useState(true);
@@ -92,12 +93,12 @@ export default function CallInterface() {
 
   const { status, isSpeaking } = conversation;
 
-  /* Start session on mount */
-  useEffect(() => {
+  const handleStartCall = useCallback(() => {
+    setShowIntro(false);
     conversation.startSession({ agentId: AGENT_ID }).catch((err) =>
       console.error('Failed to start session:', err)
     );
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [conversation]);
 
   /* Speaker toggle controls agent audio volume */
   useEffect(() => {
@@ -123,6 +124,20 @@ export default function CallInterface() {
   return (
     <>
       <TextureOverlay />
+
+      {showIntro && (
+        <div className="intro-overlay">
+          <div className="intro-popup">
+            <p className="intro-text">
+              Simula la chiamata con l&apos;assistente per prendere appuntamento
+              nello studio dentistico
+            </p>
+            <button className="intro-btn" onClick={handleStartCall}>
+              Inizia la chiamata
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="desktop-layout">
         {/* Phone frame */}
